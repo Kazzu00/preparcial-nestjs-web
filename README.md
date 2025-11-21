@@ -29,6 +29,7 @@ Ejecutar en terminal:
 ```
 npm install
 ```
+
 ### 3. Configuración de Base de Datos
 El proyecto utiliza SQLite. No es necesario instalar un servidor de base de datos externo dado que al ejecutar la aplicación TypeORM creará automáticamente el archivo travel_db.sqlite en la raíz del proyecto y generará las tablas necesarias.
 
@@ -60,7 +61,7 @@ La cual estará disponible en http://localhost:3000 por defecto.
 
 * Método: POST
 * Ruta: /travel-plans
-* Descripción: Crea un nuevo plan. Valida internamente si el countryCode existe. Si el país no está en base de datos, el sistema intenta buscarlo en la API externa automáticamente antes de crear el plan.
+* Descripción: Crea un nuevo plan, para lo cual valida internamente si el countryCode existe y si el país no está en base de datos, el sistema intenta buscarlo en la API externa automáticamente antes de crear el plan.
 Ejemplo Body:
 {
   "countryCode": "JPN",
