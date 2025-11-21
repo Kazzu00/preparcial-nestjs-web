@@ -15,8 +15,6 @@ El objetivo del proyecto es integrar conocimientos de NestJS para resolver un pr
 * **Cliente HTTP:** Axios (@nestjs/axios)
 * **Validación:** class-validator & class-transformer
 
----
-
 ## Instalación y Ejecución 
 
 ### 1. Prerrequisitos
@@ -114,3 +112,49 @@ Representa un viaje planeado por el usuario.
 
 #### 8. Pruebas Realizadas
 Se probo el funcionamiento de la API mediante Thunder client para los metodos GET y POST.
+
+# Parcial NestJS
+## Extensiones del Preparcial
+### Resumen
+En esta etapa se robusteció la API incorporando capacidades administrativas y de monitoreo. 
+Para las cuales se implementó un nuevo endpoint para eliminar países de la caché local el cual está protegido por un Guard de autorización y además, validaciones de negocio que impiden borrar países con planes de viaje asociados. También se integró un Middleware de logging que intercepta las peticiones HTTP para registrar en consola métricas de uso y desempeño para los módulos principales.
+
+### PARTE A (`DELETE /countries/:code`)
+
+Se agregó la capacidad de borrar un país de la base de datos local, por lo que Este endpoint implementa lógica de seguridad y negocio:
+
+1.  **Guard:** Se usa para interceptar la petición antes de llegar al controlador, por lo que verifica primero que exista el header Authorization con el token "web123" antes de responder a la solicitud de DELETE, que en caso de fallar retorna "401 Unauthorized".
+
+2.  **Validación de Negocio:** Para esto, el servicio verifica si el país tiene planes de viaje creados, que en caso de tenerlos, impide el borrado y retorna "400 Bad Request".
+
+#### Pruebas
+
+En este caso se probo utilizando Thunder Client en 3 casos diferentes:
+
+* **Caso 1: Acceso Denegado**
+    * **Método:** `DELETE`
+    * **URL:** `http://localhost:3000/countries/COL`
+    * **Header:** Ninguno
+    * **Resultado:** Status `401 Unauthorized`.
+
+* **Caso 2: Bloqueo por Integridad**
+    * **Header:** `Authorization: web123`
+    * **Resultado:** Status `400 Bad Request` 
+
+* **Caso 3: Borrado Exitoso**
+    * **Header:** `Authorization: web123`
+    * **Resultado:** Status `204 No Content`. Por lo que al consultar de nuevo el país, el source volverá a ser `external-api`.
+
+### Parte B (`LoggerMiddleware`)
+
+Para el mapeo se configuró un middleware global para las rutas /countries y /travel-plans. El cual captura el inicio de la petición y espera al evento finish de la respuesta para calcular el tiempo de procesamiento.
+
+Este Mapeo registra los datos del método HTTP usado, la ruta, el código de Estado y el tiempo en milisegundos.
+
+#### Pruebas
+
+Al correr la aplicación y realizar cualquier solicitud de GET, DELETE o POST desde Thunder Client podremos ver desde la consola el siguiente mensaje para diferentes solicitudes, como por ejemplo:
+
+* [HTTP] GET /countries 200 - 12ms
+* [HTTP] POST /travel-plans 201 - 45ms
+* [HTTP] DELETE /countries/FRA 204 - 8ms
