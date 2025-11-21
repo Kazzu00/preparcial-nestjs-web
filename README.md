@@ -62,12 +62,13 @@ La cual estará disponible en http://localhost:3000 por defecto.
 * Método: POST
 * Ruta: /travel-plans
 * Descripción: Crea un nuevo plan, para lo cual valida internamente si el countryCode existe y si el país no está en base de datos, el sistema intenta buscarlo en la API externa automáticamente antes de crear el plan.
-Ejemplo Body:
+* Ejemplo Body:
+
 {
   "countryCode": "JPN",
   "title": "Viaje a Tokio",
-  "startDate": "2024-10-01",
-  "endDate": "2024-10-15",
+  "startDate": "2025-10-01",
+  "endDate": "2025-10-15",
   "notes": "Visitar el monte Fuji"
 }
 
