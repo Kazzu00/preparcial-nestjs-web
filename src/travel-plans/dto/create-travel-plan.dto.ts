@@ -2,7 +2,7 @@ import { IsString, IsNotEmpty, IsDateString, Length, IsOptional } from 'class-va
 
 export class CreateTravelPlanDto {
   @IsString()
-  @Length(3, 3) // El código debe ser de 3 letras
+  @Length(3, 3) 
   @IsNotEmpty()
   countryCode: string;
 
@@ -10,7 +10,7 @@ export class CreateTravelPlanDto {
   @IsNotEmpty()
   title: string;
 
-  @IsDateString() // Valida formato fecha ISO 8601
+  @IsDateString() 
   startDate: string;
 
   @IsDateString()

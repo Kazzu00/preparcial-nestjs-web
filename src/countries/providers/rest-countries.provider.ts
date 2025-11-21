@@ -8,11 +8,11 @@ export class RestCountriesProvider {
 
   async getCountryByCode(code: string): Promise<any> {
     try {
-      // Consultamos la API externa limitando los campos [cite: 43, 50]
+      // Consultamos la API externa
       const url = `https://restcountries.com/v3.1/alpha/${code}?fields=cca3,name,region,subregion,capital,population,flags`;
       const response = await lastValueFrom(this.httpService.get(url));
       
-      // La API retorna un dato simple, mapeamos para que coincida con nuestro modelo
+      // La API retorna un dato simple
       const data = response.data;
       
       return {

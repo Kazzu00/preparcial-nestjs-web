@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Country } from './entities/country.entity';
@@ -9,7 +9,7 @@ export class CountriesService {
   constructor(
     @InjectRepository(Country)
     private countriesRepository: Repository<Country>,
-    private restCountriesProvider: RestCountriesProvider, // Inyectamos el provider [cite: 51]
+    private restCountriesProvider: RestCountriesProvider,
   ) {}
 
   async findAll() {
@@ -19,30 +19,52 @@ export class CountriesService {
   async findOneByCode(code: string) {
     const alpha3 = code.toUpperCase();
 
-    // 1. Buscar en Base de Datos Local (Caché) [cite: 39]
+    // Buscar en BD Local
     const localCountry = await this.countriesRepository.findOne({ where: { code: alpha3 } });
-
     if (localCountry) {
-      return { ...localCountry, source: 'local-cache' }; // [cite: 40]
+      return { ...localCountry, source: 'local-cache' };
     }
 
-    // 2. Si no existe, consultar API externa [cite: 41, 42]
+    // API Externa
     const externalData = await this.restCountriesProvider.getCountryByCode(alpha3);
 
-    // 3. Guardar en Base de Datos [cite: 44]
+    // Guardar en BD Local
     const newCountry = this.countriesRepository.create(externalData);
     await this.countriesRepository.save(newCountry);
 
-    // 4. Retornar resultado [cite: 45]
+    // Retornar
     return { ...newCountry, source: 'external-api' };
   }
   
-  // Método auxiliar para validar existencia interna sin retornar source info
   async findEntityByCode(code: string): Promise<Country> {
-      // Reutilizamos la lógica principal para asegurar que se cachee si no existe
       const result = await this.findOneByCode(code);
-      // Eliminamos la propiedad 'source' para retornar la entidad pura
-      const { source, ...country } = result;
+      const { source, ...country } = result; 
       return country as Country;
+  }
+
+  // Borrar
+  async remove(code: string): Promise<void> {
+    const alpha3 = code.toUpperCase();
+
+    // Verificar si el país existe en la BD local
+    const country = await this.countriesRepository.findOne({ where: { code: alpha3 } });
+    if (!country) {
+      throw new NotFoundException(`Country with code ${alpha3} not found in local cache.`);
+    }
+
+    // Verificar si existen planes asociados
+    const plansCountResult = await this.countriesRepository.query(
+      `SELECT count(*) as count FROM travel_plan WHERE countryCode = ?`, 
+      [alpha3]
+    );
+
+    const count = plansCountResult[0]?.count || plansCountResult[0]?.['count(*)'] || 0; // Manejo seguro del resultado SQL
+
+    if (Number(count) > 0) {
+      throw new BadRequestException(`Cannot delete country ${alpha3}: It has ${count} associated travel plan(s).`);
+    }
+
+    // Eliminar
+    await this.countriesRepository.remove(country);
   }
 }

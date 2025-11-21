@@ -7,7 +7,7 @@ export class TravelPlansController {
   constructor(private readonly travelPlansService: TravelPlansService) {}
 
   @Post()
-  @UsePipes(new ValidationPipe()) // Activa validaciones del DTO [cite: 64]
+  @UsePipes(new ValidationPipe()) // Activa validaciones del DTO 
   create(@Body() createTravelPlanDto: CreateTravelPlanDto) {
     return this.travelPlansService.create(createTravelPlanDto);
   }

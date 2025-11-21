@@ -6,7 +6,7 @@ export class Country {
   id: number;
 
   @Column({ unique: true })
-  code: string; // Alpha-3 code (ej: COL)
+  code: string; 
 
   @Column()
   name: string;

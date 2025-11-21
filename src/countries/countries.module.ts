@@ -11,6 +11,6 @@ import { RestCountriesProvider } from './providers/rest-countries.provider';
   imports: [TypeOrmModule.forFeature([Country]), HttpModule],
   controllers: [CountriesController],
   providers: [CountriesService, RestCountriesProvider],
-  exports: [CountriesService], // Exportamos para usarlo en TravelPlans [cite: 89]
+  exports: [CountriesService], 
 })
 export class CountriesModule {}

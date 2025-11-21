@@ -3,23 +3,23 @@ import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from 'typeor
 @Entity()
 export class TravelPlan {
   @PrimaryGeneratedColumn()
-  id: number; // [cite: 57]
+  id: number; 
 
   @Column()
-  countryCode: string; // [cite: 58]
+  countryCode: string; 
 
   @Column()
-  title: string; // [cite: 59]
+  title: string; 
 
   @Column()
-  startDate: Date; // [cite: 60]
+  startDate: Date; 
 
   @Column()
-  endDate: Date; // [cite: 60]
+  endDate: Date; 
 
   @Column({ nullable: true })
-  notes: string; // [cite: 61]
+  notes: string; 
 
   @CreateDateColumn()
-  createdAt: Date; // [cite: 62]
+  createdAt: Date; 
 }
